@@ -1015,6 +1015,28 @@ int codec_get_vdec_state(codec_para_t *p, struct vdec_status *vdec)
 
 /* --------------------------------------------------------------------------*/
 /**
+* @brief  codec_get_vdec_info  Get the info of video decoder by codec device
+*
+* @param[in]   p     Pointer of codec parameter structure
+* @param[out]  vdec  Pointer of video decoder info structure
+*
+* @return      Success or fail type
+*/
+/* --------------------------------------------------------------------------*/
+int codec_get_vdec_info(codec_para_t *p, struct vdec_info *vdec)
+{
+  int r;
+  struct am_io_info am_io;
+  r = codec_h_control(p->handle, AMSTREAM_IOC_VDECINFO, (unsigned long)&am_io);
+  memcpy(vdec, &am_io.vinfo, sizeof(struct vdec_info));
+  if (r < 0) {
+    CODEC_PRINT("[codec_get_vdec_info]error[%d]: %s\n", r, codec_error_msg(system_error_to_codec_error(r)));
+  }
+  return system_error_to_codec_error(r);
+}
+
+/* --------------------------------------------------------------------------*/
+/**
 * @brief  codec_get_adec_state  Get the state of audio decoder by codec device
 *
 * @param[in]   p     Pointer of codec parameter structure

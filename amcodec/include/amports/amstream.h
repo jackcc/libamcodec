@@ -87,6 +87,7 @@
 #define AMSTREAM_IOC_TS_SKIPBYTE _IOW((AMSTREAM_IOC_MAGIC), 0x1d, int)
 #define AMSTREAM_IOC_SUB_TYPE    _IOW((AMSTREAM_IOC_MAGIC), 0x1e, int)
 #define AMSTREAM_IOC_CLEAR_VIDEO _IOW((AMSTREAM_IOC_MAGIC), 0x1f, int)
+#define AMSTREAM_IOC_VDECINFO    _IOR((AMSTREAM_IOC_MAGIC), 0x20, int)
 
 #define AMSTREAM_IOC_APTS             _IOR((AMSTREAM_IOC_MAGIC), 0x40, int)
 #define AMSTREAM_IOC_VPTS             _IOR((AMSTREAM_IOC_MAGIC), 0x41, int)
@@ -215,6 +216,27 @@ struct vdec_status {
     unsigned int status;
 };
 
+struct vdec_info {
+	char vdec_name[16];
+	unsigned int ver;
+	unsigned int frame_width;
+	unsigned int frame_height;
+	unsigned int frame_rate;
+	unsigned int bit_rate;
+	unsigned int frame_dur;
+	unsigned int frame_data;
+	unsigned int error_count;
+	unsigned int status;
+	unsigned int frame_count;
+	unsigned int error_frame_count;
+	unsigned int drop_frame_count;
+	unsigned long long total_data;
+	unsigned int samp_cnt;
+	unsigned int offset;
+	unsigned int ratio_control;
+	char reserved[32];
+};
+
 struct adec_status {
     unsigned int channels;
     unsigned int sample_rate;
@@ -238,6 +260,19 @@ struct am_io_param {
         struct adec_status astatus;
     };
 };
+
+struct am_io_info {
+	union {
+		int data;
+		int id;
+	};
+	int len;
+	union {
+		char buf[1];
+		struct vdec_info vinfo;
+	};
+};
+
 struct subtitle_info {
 
 	unsigned char id;
