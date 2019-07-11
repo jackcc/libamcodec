@@ -1,8 +1,6 @@
 
 ROOTFS?=$(PREFIX)
 
-CROSS=$(CC:%gcc=%)
-
 QUITE_CMD?=no
 
 INSTALL_FLAGS=-m 755
