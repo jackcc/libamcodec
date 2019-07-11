@@ -25,6 +25,13 @@
 #include "codec_h_ctrl.h"
 #include <adec-external-ctrl.h>
 
+#include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/fb.h>
+#include <sys/mman.h>
+
 #define SUBTITLE_EVENT
 #define TS_PACKET_SIZE 188
 #define DEMUX_PLAYER_SOURCE 1
@@ -683,6 +690,38 @@ int codec_init(codec_para_t *pcodec)
     int ret;
     //if(pcodec->has_audio)
     //  audio_stop();
+
+    int fd_m;
+    struct fb_var_screeninfo info;
+
+    fd_m = open("/dev/fb0", O_RDWR);
+
+    if(ioctl(fd_m, FBIOGET_VSCREENINFO, &info) == -1) {
+		printf("CODEC ERROR -14\n");
+		return -1;
+	}
+
+    info.reserved[0] = 0;
+    info.reserved[1] = 0;
+    info.reserved[2] = 0;
+    info.xoffset = 0;
+    info.yoffset = 0;
+    info.activate = FB_ACTIVATE_NOW;
+    info.bits_per_pixel = 32;
+    info.red.offset = 16;
+    info.red.length = 8;
+    info.green.offset = 8;
+    info.green.length = 8;
+    info.blue.offset = 0;
+    info.blue.length = 8;
+    info.transp.offset = 24;
+    info.transp.length = 8;
+    info.nonstd = 1;
+    info.yres_virtual = info.yres * 2;
+    ioctl(fd_m, FBIOPUT_VSCREENINFO, &info);
+    close(fd_m);
+
+
     pcodec->handle = -1;
     pcodec->cntl_handle = -1;
     pcodec->sub_handle = -1;
